@@ -1,29 +1,23 @@
 # Assignment API
 
-## About the Project
+A simple FastAPI application for creating, viewing, and deleting assignments. Data is stored temporarily in a Python list and is lost when the server restarts.
 
-The Assignment API is a simple API built with FastAPI. It allows users to create, view and delete assignments.
+Features
 
-Each assignment contains:
+* Create assignments
+* View all assignments
+* View an assignment by ID
+* Delete assignments
+* Validate input data
+* Return `404` for missing assignments
+* Return `422` for invalid input
 
-- An ID
-- A title
-- A due date
-- A completion status
+## Technologies
 
-The assignments are stored temporarily in a Python list while the application is running. Because the project does not use a database, all assignments will disappear when the server is stopped or restarted.
-
-## Features
-
-The API allows users to:
-
-- Create a new assignment
-- View all assignments
-- View one assignment using its ID
-- Delete an assignment
-- Validate assignment information
-- Receive a `404 Not Found` response when an assignment does not exist
-- Receive a `422 Unprocessable Entity` response when invalid information is submitted
+* Python
+* FastAPI
+* Pydantic
+* Uvicorn
 
 ## Project Structure
 
@@ -34,101 +28,53 @@ assignment-api/
 └── README.md
 ```
 
-## Technologies Used
-
-- Python
-- FastAPI
-- Pydantic
-- Uvicorn
-
 ## Installation
-
-### 1. Clone the repository
 
 ```bash
 git clone YOUR_GITHUB_REPOSITORY_LINK
-```
-
-Enter the project folder:
-
-```bash
 cd assignment-api
-```
-
-### 2. Create a virtual environment
-
-On Windows:
-
-```bash
 python -m venv venv
 ```
 
-On macOS or Linux:
+Activate the virtual environment:
 
-```bash
-python3 -m venv venv
-```
-
-### 3. Activate the virtual environment
-
-On Windows:
+**Windows**
 
 ```bash
 venv\Scripts\activate
 ```
 
-On macOS or Linux:
+**macOS/Linux**
 
 ```bash
 source venv/bin/activate
 ```
 
-### 4. Install the required packages
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Running the API
-
-Start the FastAPI server by running:
+## Run the API
 
 ```bash
 uvicorn main:app --reload
 ```
 
-When the server starts, open the following address in your browser:
+API: `http://127.0.0.1:8000`
+Swagger documentation: `http://127.0.0.1:8000/docs`
 
-```text
-http://127.0.0.1:8000
-```
+## Endpoints
 
-Open the interactive API documentation at:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-The documentation page can be used to test all the API endpoints.
-
-## API Endpoints
-
-| Method | Endpoint | Purpose |
-| --- | --- | --- |
-| POST | `/assignments` | Create a new assignment |
-| GET | `/assignments` | View all assignments |
-| GET | `/assignments/{assignment_id}` | View one assignment |
+| Method | Endpoint                       | Purpose              |
+| ------ | ------------------------------ | -------------------- |
+| POST   | `/assignments`                 | Create an assignment |
+| GET    | `/assignments`                 | View all assignments |
+| GET    | `/assignments/{assignment_id}` | View one assignment  |
 | DELETE | `/assignments/{assignment_id}` | Delete an assignment |
 
-## Create an Assignment
-
-### Request
-
-```http
-POST /assignments
-```
-
-### Request body
+## Example Assignment
 
 ```json
 {
@@ -138,191 +84,45 @@ POST /assignments
 }
 ```
 
-### Example response
+A successful `POST` request returns `201 Created` and automatically generates the assignment ID.
 
-```json
-{
-  "id": 1,
-  "title": "Complete FastAPI exercise",
-  "due_date": "2026-08-30",
-  "done": false
-}
-```
+## Validation
 
-A successful request returns the status code:
-
-```text
-201 Created
-```
-
-The user does not need to provide the ID. The API automatically generates it.
-
-## View All Assignments
-
-### Request
-
-```http
-GET /assignments
-```
-
-### Example response
-
-```json
-[
-  {
-    "id": 1,
-    "title": "Complete FastAPI exercise",
-    "due_date": "2026-08-30",
-    "done": false
-  },
-  {
-    "id": 2,
-    "title": "Read Chapter 4",
-    "due_date": "2026-09-01",
-    "done": true
-  }
-]
-```
-
-If there are no assignments, the API returns an empty list:
-
-```json
-[]
-```
-
-## View One Assignment
-
-To view a particular assignment, include its ID in the address.
-
-### Request
-
-```http
-GET /assignments/1
-```
-
-### Example response
-
-```json
-{
-  "id": 1,
-  "title": "Complete FastAPI exercise",
-  "due_date": "2026-08-30",
-  "done": false
-}
-```
-
-If the assignment does not exist, the API returns:
-
-```json
-{
-  "detail": "Assignment not found"
-}
-```
-
-The response status code will be:
-
-```text
-404 Not Found
-```
-
-## Delete an Assignment
-
-To delete an assignment, include its ID in the address.
-
-### Request
-
-```http
-DELETE /assignments/1
-```
-
-### Example response
-
-```json
-{
-  "message": "Assignment deleted successfully"
-}
-```
-
-If the assignment does not exist, the API returns:
-
-```json
-{
-  "detail": "Assignment not found"
-}
-```
-
-The response status code will be:
-
-```text
-404 Not Found
-```
-
-## Validation Rules
-
-The assignment title has two validation rules:
-
-- The title must contain at least 3 characters.
-- The title cannot contain more than 100 characters.
-
-For example, this request is invalid because the title is empty:
-
-```json
-{
-  "title": "",
-  "due_date": "2026-08-30",
-  "done": false
-}
-```
-
-FastAPI automatically returns:
+The `title` must be between **3 and 100 characters**. Invalid data returns:
 
 ```text
 422 Unprocessable Entity
 ```
 
-## Assignment Data
+If an assignment does not exist, the API returns:
 
-Each assignment contains the following fields:
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `id` | Integer | The unique ID generated by the API |
-| `title` | String | The title of the assignment |
-| `due_date` | Date | The assignment deadline |
-| `done` | Boolean | Shows whether the assignment is complete |
-
-The `done` field accepts:
-
-- `false` when the assignment is not complete
-- `true` when the assignment is complete
-
-## In-Memory Storage
-
-Assignments are stored in a Python list while the server is running.
-
-This means:
-
-- A database is not used.
-- Assignments are stored temporarily.
-- Assignments will disappear when the server restarts.
-
-## Testing the API
-
-Open:
-
-```text
-http://127.0.0.1:8000/docs
+```json
+{
+  "detail": "Assignment not found"
+}
 ```
 
-Complete the following tests:
+with status:
 
-1. Create an assignment using `POST /assignments`.
-2. View all assignments using `GET /assignments`.
-3. View one assignment using `GET /assignments/1`.
-4. Delete an assignment using `DELETE /assignments/1`.
-5. Submit a title with fewer than 3 characters and confirm that the API returns `422`.
-6. Request an assignment ID that does not exist and confirm that the API returns `404`.
+```text
+404 Not Found
+```
+
+## Storage
+
+Assignments are stored **in memory**, so all data is deleted when the server stops or restarts.
+
+## Testing
+
+Use `/docs` to test:
+
+1. `POST /assignments`
+2. `GET /assignments`
+3. `GET /assignments/1`
+4. `DELETE /assignments/1`
+5. Invalid titles for `422`
+6. Missing IDs for `404`
 
 ## Author
 
-Yusif Issah Babamu
+**Yusif Issah Babamu**
